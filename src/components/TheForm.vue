@@ -1,12 +1,28 @@
 <template>
   <form @submit.prevent="submitForm">
-    <div class="form-control">
+    <div
+      class="form-control"
+      :class="{ invalid: userNameValidity === 'invalid' }"
+    >
       <label for="user-name">Your Name</label>
-      <input id="user-name" name="user-name" type="text" v-model="userName" />
+      <input
+        id="user-name"
+        name="user-name"
+        type="text"
+        v-model.trim="userName"
+        @blur="validateInput"
+      />
+      <p v-if="userNameValidity === 'invalid'">Please enter a valid name!</p>
     </div>
     <div class="form-control">
       <label for="age">Your Age (Years)</label>
-      <input id="age" name="age" type="number" v-model.number="userAge" />
+      <input
+        id="age"
+        name="age"
+        type="number"
+        v-model="userAge"
+        ref="ageInput"
+      />
     </div>
     <div class="form-control">
       <label for="referrer">How did you hear about us?</label>
@@ -17,7 +33,6 @@
       </select>
     </div>
     <div class="form-control">
-      <!-- data 的 值必須為陣列，且 value 都必須是不一樣 -->
       <h2>What are you interested in?</h2>
       <div>
         <input
@@ -25,7 +40,7 @@
           name="interest"
           type="checkbox"
           value="news"
-          v-model="interests"
+          v-model="interest"
         />
         <label for="interest-news">News</label>
       </div>
@@ -35,7 +50,7 @@
           name="interest"
           type="checkbox"
           value="tutorials"
-          v-model="interests"
+          v-model="interest"
         />
         <label for="interest-tutorials">Tutorials</label>
       </div>
@@ -45,7 +60,7 @@
           name="interest"
           type="checkbox"
           value="nothing"
-          v-model="interests"
+          v-model="interest"
         />
         <label for="interest-nothing">Nothing</label>
       </div>
@@ -84,12 +99,11 @@
       </div>
     </div>
     <div class="form-control">
-      <!-- 如果是單選 Vue 會自己將value轉為boolean -->
       <input
         type="checkbox"
-        name="confirm-terms"
         id="confirm-terms"
-        v-model="confirmTerm"
+        name="confirm-terms"
+        v-model="confirm"
       />
       <label for="confirm-terms">Agree to terms of use?</label>
     </div>
@@ -98,30 +112,47 @@
     </div>
   </form>
 </template>
+
 <script>
 export default {
   data() {
     return {
       userName: '',
       userAge: null,
-      referrer: 'google',
-      interests: [],
-      how: '',
-      confirmTerm: false,
+      referrer: 'wom',
+      interest: [],
+      how: null,
+      confirm: false,
+      userNameValidity: 'pending',
     };
   },
   methods: {
     submitForm() {
-      console.log(this.userName, this.userAge, this.referrer);
+      console.log('Username: ' + this.userName);
       this.userName = '';
+      console.log('User age:');
+      console.log(this.userAge + 5);
+      console.log(this.$refs.ageInput.value + 5);
+      console.log(31);
       this.userAge = null;
-      this.referrer = 'google';
-      console.log(this.interests);
-      this.interests = [];
+      console.log('Referrer: ' + this.referrer);
+      this.referrer = 'wom';
+      console.log('Checkboxes');
+      console.log(this.interest);
+      console.log('Radio buttons');
       console.log(this.how);
-      this.how = '';
-      console.log(this.confirmTerm);
-      this.confirmTerm = false;
+      this.interest = [];
+      this.how = null;
+      console.log('Confirm?');
+      console.log(this.confirm);
+      this.confirm = false;
+    },
+    validateInput() {
+      if (this.userName === '') {
+        this.userNameValidity = 'invalid';
+      } else {
+        this.userNameValidity = 'valid';
+      }
     },
   },
 };
@@ -139,6 +170,14 @@ form {
 
 .form-control {
   margin: 0.5rem 0;
+}
+
+.form-control.invalid input {
+  border-color: red;
+}
+
+.form-control.invalid label {
+  color: red;
 }
 
 label {
